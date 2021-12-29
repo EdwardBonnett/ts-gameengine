@@ -1,0 +1,23 @@
+{
+  "name": "timetravel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development vite",
+    "build": "cross-env NODE_ENV=development tsc && vite build",
+    "preview": "cross-env NODE_ENV=development vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^6.2.0",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.6.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "typescript": "^4.5.2",
+    "vite": "^2.7.0"
+  }
+}
