@@ -53,7 +53,7 @@ export default class MoveComponent extends Component {
 
     collisionCheck () {
         if (!this.entity.sprite) return;
-        const myRect = this.entity.calculateCollisionRect(this.destinationX, this.destinationY, this.entity.sprite.width, this.entity.sprite.height);
+        const myRect = this.entity.calculateCollisionRect(this.destinationX, this.destinationY, this.entity.width, this.entity.height);
         this.entity.mapService.currentMap?.entities.forEach((entity) => {
             if (!entity.components.solid) return;
             if (this.entity.isCollidingWith(entity, myRect)) {

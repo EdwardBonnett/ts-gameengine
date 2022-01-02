@@ -38,7 +38,21 @@ export default class MapOverworld extends WorldMap {
             }
         },
         { 
-            entity: Player, config: { x: 5, y: 5 }
+            entity: Player,
+            config: { x: 5, y: 5, visible: true, scaleX: 2, children: [
+                {
+                    entity: RedTile,
+                    config: {
+                        x: 10,
+                        scaleX: 1,
+                        visible: true,
+                        y: 0,
+                        debug: {
+                            collisionRect: true
+                        }
+                    }
+                }
+            ]}
         },
     ]
 }

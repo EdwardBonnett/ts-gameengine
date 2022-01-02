@@ -1,6 +1,6 @@
 import Entity from "../entities/entity";
 
-export default class Component {
+export class Component {
 
     name = "component";
 

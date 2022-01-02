@@ -14,6 +14,8 @@ export default class Player extends Entity {
             global: true,
             animated: true,
             z: 99,
+            width: 16,
+            height: 24,
             collisionRect: {
                 x: 4,
                 y: 14,

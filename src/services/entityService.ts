@@ -41,6 +41,16 @@ export default class EntityService {
             entity.playAnimation(entity.currentAnimation);
         }
         this.entities.push(entity);
+
+        if (params?.children) {
+            params.children?.forEach(async (child) => {
+                const childEntity = await this.createEntity(
+                    child.entity, 
+                    { ...child.config, parent: entity }
+                );
+                entity.children.push(childEntity);
+            });
+        }
         return entity;
     }
 

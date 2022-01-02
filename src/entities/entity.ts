@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Component from '../components/component';
+import { TileSize } from '../consts';
 import Direction from '../models/direction';
 import DebugService from '../services/debugService';
 import EntityService from '../services/entityService';
@@ -9,15 +10,19 @@ import MapService from '../services/mapService';
 import TextureService from '../services/textureService';
 
 export interface EntityParams {
+    id?: string;
     name?: string;
     resourceName?: string;
     resourcePath?: string;
     currentAnimation?: string;
     looping?: boolean;
     animated?: boolean;
+    visible?: boolean;
     x?: number;
     y?: number;
     z?: number;
+    width?: number;
+    height?: number;
     scaleX?: number;
     scaleY?: number;
     collisionRect?: { x: number; y: number, width: number; height: number },
@@ -27,6 +32,11 @@ export interface EntityParams {
     debug?: {
         collisionRect?: boolean;
     };
+    parent?: Entity;
+    children?: Array<{
+        config: EntityParams,
+        entity: typeof Entity
+    }>;
 }
 
 export default class Entity {
@@ -48,15 +58,25 @@ export default class Entity {
 
     global = false;
 
-    scaleX: number = 0;
+    private _scaleX: number = 0;
     
-    scaleY: number = 0;
+    private _scaleY: number = 0;
 
     id: string = '';
     
     animated: boolean = false;
 
+    visible: boolean = true;
+
+    children: Array<Entity> = [];
+
+    parent?: Entity;
+    
     private _collisionRect?: PIXI.Rectangle;
+
+    width: number = TileSize;
+
+    height: number = TileSize;
 
     z = 0;
 
@@ -68,6 +88,7 @@ export default class Entity {
         collisionRect?: boolean;
     } = {}
 
+
     constructor (
         public gameService: GameService, 
         public textureService: TextureService, 
@@ -78,32 +99,51 @@ export default class Entity {
     }
 
     get x () {
-        return this._x;
+        return (this.parent?.x ?? 0) + this._x;
     }
 
     set x (val: number) {
         this._x = val;
         if (this.sprite) {
-            this.sprite.x = this.x;
+            this.sprite.x = this.x - (this.parent?.x ?? 0);
         }
-        this.drawCollisionBox();  
     }
 
     get y () {
-        return this._y;
+        return (this.parent?.y ?? 0) + this._y;
     }
 
     set y (val: number) {
         this._y = val;
         if (this.sprite) {
-            this.sprite.y = this.y;
+            this.sprite.y = this.y - (this.parent?.y ?? 0);
         }
-        this.drawCollisionBox();
+    }
+
+    get scaleX () {
+        return (this.parent?.scaleX ?? 1) * this._scaleX;
+    }
+
+    set scaleX (val: number) {
+        this._scaleX = val;
+        if (this.sprite) {
+            this.sprite.scale.x = this._scaleX;
+        }
+    }
+
+    get scaleY () {
+        return (this.parent?.scaleY ?? 1) * this._scaleY;
+    }
+
+    set scaleY (val: number) {
+        this._scaleY = val;
+        if (this.sprite) {
+            this.sprite.scale.y = this._scaleY;
+        }
     }
 
     get collisionRect () {
-        if (!this.sprite) return;
-        return this.calculateCollisionRect(this.x, this.y, this.sprite?.width, this.sprite?.height);
+        return this.calculateCollisionRect(this.x, this.y, this.width, this.height);
     }
 
     set collisionRect (rect: PIXI.Rectangle | undefined) {
@@ -111,35 +151,38 @@ export default class Entity {
     }
 
     init (params?: EntityParams) {
-        this.id = Math.random().toString();
-        if (params) {
-            this.name = params.name ?? 'Entity';
-            this.resourceName = params.resourceName ?? this.name;
-            this.resourcePath = params.resourcePath;
-            this.currentAnimation = params.currentAnimation;
-            this.x = params.x ?? 0;
-            this.y = params.y ?? 0
-            this.z = params.z ?? 0;
-            this.scaleX = params.scaleX ?? 1;
-            this.scaleY = params.scaleY ?? 1;
-            this.global = params.global ?? false;
-            this.collisionRect = params.collisionRect as PIXI.Rectangle;
-            this.animated = params.animated ?? false;
-            this.debug = params.debug;
-            if (!params.componentProps) params.componentProps = {};
-            if (params.components) {
-                params.components.forEach((c) => {
-                    const component = new c.component(this);
-                    if (c.props) {
-                        params.componentProps![component.name] = c.props;
-                    }
-                    this.components[component.name] = component;
-                });
-            }
-            Object.values(this.components).forEach((component) => {
-                component.init(params.componentProps![component.name]);
+        if (!params) params = {};
+        this.id = params.id ?? Math.random().toString();
+        this.name = params.name ?? 'Entity';
+        this.parent = params.parent;
+        this.resourceName = params.resourceName ?? this.name;
+        this.resourcePath = params.resourcePath;
+        this.currentAnimation = params.currentAnimation;
+        this.x = params.x ?? 0;
+        this.y = params.y ?? 0
+        this.z = params.z ?? 0;
+        this.width = params.width ?? TileSize;
+        this.height = params.height ?? TileSize;
+        this.scaleX = params.scaleX ?? 1;
+        this.scaleY = params.scaleY ?? 1;
+        this.global = params.global ?? false;
+        this.collisionRect = params.collisionRect as PIXI.Rectangle;
+        this.animated = params.animated ?? false;
+        this.debug = params.debug;
+        this.visible = params.visible ?? true;
+        if (!params.componentProps) params.componentProps = {};
+        if (params.components) {
+            params.components.forEach((c) => {
+                const component = new c.component(this);
+                if (c.props) {
+                    params!.componentProps![component.name] = c.props;
+                }
+                this.components[component.name] = component;
             });
         }
+        Object.values(this.components).forEach((component) => {
+            component.init(params!.componentProps![component.name]);
+        });
     }
 
     async loadResource () {
@@ -160,16 +203,23 @@ export default class Entity {
         const textures = this.textureService.getTextures(this.resourceName, frames);
         this.sprite = new PIXI.AnimatedSprite(textures);
         this.sprite.anchor.set(0.5, 0.5);
-        this.sprite.scale.set(this.scaleX, this.scaleY);
         this.sprite.zIndex = this.z;
-        this.gameService.App.stage.addChild(this.sprite);
-        this.x = this.x;
-        this.y = this.y;
+        if (this.parent && this.parent.sprite) {
+            this.parent.sprite.addChild(this.sprite);
+        } else {
+            this.gameService.App.stage.addChild(this.sprite);
+        }
+        this.x = this._x;
+        this.y = this._y;
+        this.scaleX = this._scaleX;
+        this.scaleY = this._scaleY;
         this.sprite.interactive = true;
         this.sprite.on('mouseover', () => {
             this.debugService.setDebugText(this.mapService.positionToTilePos(this.x) + ',' + this.mapService.positionToTilePos(this.y));
         });
-        this.drawCollisionBox();
+        if (!this.visible) {
+            this.sprite.visible = false;
+        }
     }
 
     playAnimation (animationName: string, looping = true, startFrame = 0, resourceName?: string) {
@@ -191,29 +241,48 @@ export default class Entity {
         Object.values(this.components).forEach((component) => {
             component.update();
         });
+        this.children.forEach((child) => {
+            child.update();
+        });
+        this.drawCollisionBox();
     }
 
     destroy () {
         if (this.sprite) {
+            this.sprite.parent.removeChild(this.sprite);
             this.sprite.destroy();
         }
         this.entityService.removeEntity(this);
         this.debugService.removeDebugRectangle(this.id);
+        this.children.forEach((child) => {
+            child.destroy();
+        });
     }
 
     calculateCollisionRect (x: number, y: number, width: number, height: number) {
         const rect = this._collisionRect ?? { 
             x: 0,
             y: 0, 
-            height: height / this.scaleY,
-            width: width / this.scaleX,
+            height: height,
+            width: width,
         };
+        if (this.parent) {
+            x += this._x * this.parent.scaleX - this._x;
+            y += this._y * this.parent.scaleY - this._y;
+        }
+
         return new PIXI.Rectangle(
-            x + rect.x * this.scaleX - width * 0.5,
-            y + rect.y * this.scaleY - height * 0.5,
+            x - width * this.scaleX * 0.5 + rect.x * this.scaleX,
+            y - height * this.scaleY * 0.5 + rect.y * this.scaleY,
             rect.width * this.scaleX,
             rect.height * this.scaleY,
          );
+        return new PIXI.Rectangle(
+            this.sprite!.worldTransform.tx - width * 0.5 * this.scaleX + rect.x * this.scaleX, 
+            this.sprite!.worldTransform.ty - height * 0.5 * this.scaleY + rect.y * this.scaleY, 
+            rect.width * this.scaleX,
+            rect.height * this.scaleY
+        )
     }
 
     isCollidingWith (entity: Entity, ownRect?: PIXI.Rectangle) {
@@ -221,9 +290,9 @@ export default class Entity {
         if (!ownRect || entity === this) return false;
         const rect = entity.collisionRect;
         if (!rect) return false;
-        return ownRect.right >= rect.left
-            && ownRect.left <= rect.right
-            && ownRect.top <= rect.bottom
-            && ownRect.bottom >= rect.top
+        return Math.max(ownRect.right, ownRect.left) >= Math.min(rect.left, rect.right)
+            && Math.min(ownRect.left, ownRect.right) <= Math.max(rect.right, rect.left)
+            && Math.min(ownRect.top, ownRect.bottom) <= Math.max(rect.bottom, rect.top)
+            && Math.max(ownRect.bottom, ownRect.top) >= Math.min(rect.top, rect.bottom)
     }
  }
