@@ -1,11 +1,11 @@
 import { delay, inject, singleton } from "tsyringe";
 import { TileSize } from "../consts";
-import Entity from "../entities/entity";
-import WorldMap from "../models/worldMap";
-import EntityService from "./entityService";
+import { Entity } from "../entities/entity";
+import { WorldMap } from "../models/worldMap";
+import { EntityService } from "./entityService";
 
 @singleton()
-export default class MapService {
+export class MapService {
 
     constructor (@inject(delay(() => EntityService)) private entityService: EntityService) {
     }
@@ -62,7 +62,7 @@ export default class MapService {
     getTile (x: number, y: number, ignoreEntity?: Entity) {
         const tileX = this.positionToTilePos(x);
         const tileY = this.positionToTilePos(y);
-        return this.currentMap?.entities.filter(a => this.positionToTilePos(a.x) === tileX && this.positionToTilePos(a.y) === tileY && a !== ignoreEntity);
+        return this.currentMap?.entities.filter(a => this.positionToTilePos(a.transform.position.x) === tileX && this.positionToTilePos(a.transform.position.y) === tileY && a !== ignoreEntity);
     }
 
 }

@@ -1,8 +1,8 @@
-import Entity from "../entities/entity";
+import { Entity } from "../entities/entity";
 
 export class Component {
 
-    name = "component";
+    get name () { return this.constructor.name };
 
     entity: Entity;
 
@@ -13,16 +13,20 @@ export class Component {
     }
     
 
-    init (_props?: any) {
-        this.requiredComponents.forEach((component) => {
-            if (!this.entity.components[component]) {
-                console.error(`ERROR: ${this.name} requires component ${component} to be present on entity ${this.entity.name}`)
-            }
-        })
+    async init (_props?: any) {
+        // this.requiredComponents.forEach((component) => {
+        //     if (!this.entity.components[component]) {
+        //         console.error(`ERROR: ${this.name} requires component ${component} to be present on entity ${this.entity.name}`)
+        //     }
+        // })
 
     }
 
     update () {
+
+    }
+
+    destroy () {
 
     }
 

@@ -1,33 +1,32 @@
-import Direction from "../models/direction";
-import Component from "./component";
+import { Direction } from "../models/direction";
+import { CollisionComponent } from "./collisionComponent";
+import { Component } from "./component";
+import { SolidComponent } from "./solidComponent";
 
-export default class MoveComponent extends Component {
-
-    name = "move";
-
+export class MoveComponent extends Component {
     destinationX = 0;
 
     destinationY = 0;
 
-    init () {
-        this.destinationX = this.entity.x;
-        this.destinationY = this.entity.y;
+    async init () {
+        this.destinationX = this.entity.transform.position.x;
+        this.destinationY = this.entity.transform.position.y;
         super.init();
     }
 
     update () {
-        if (this.destinationX < this.entity.x) {
-            this.entity.currentDirection = Direction.Left;
-        } else if (this.destinationX > this.entity.x) {
-            this.entity.currentDirection = Direction.Right;
-        } else if (this.destinationY > this.entity.y) {
-            this.entity.currentDirection = Direction.Down;
-        } else if (this.destinationY < this.entity.y) {
-            this.entity.currentDirection = Direction.Up;
+        if (this.destinationX < this.entity.transform.position.x) {
+            this.entity.transform.direction = Direction.Left;
+        } else if (this.destinationX > this.entity.transform.position.x) {
+            this.entity.transform.direction = Direction.Right;
+        } else if (this.destinationY > this.entity.transform.position.y) {
+            this.entity.transform.direction = Direction.Down;
+        } else if (this.destinationY < this.entity.transform.position.y) {
+            this.entity.transform.direction = Direction.Up;
         }
 
-        this.entity.x = this.destinationX;
-        this.entity.y = this.destinationY;
+        this.entity.transform.position.x = this.destinationX;
+        this.entity.transform.position.y = this.destinationY;
     }
 
     move (direction: Direction) {
@@ -46,20 +45,21 @@ export default class MoveComponent extends Component {
                 break;
         }
         if (direction) {
-            this.entity.currentDirection = direction;
+            this.entity.transform.direction = direction;
         }
         this.collisionCheck();
     }
 
     collisionCheck () {
-        if (!this.entity.sprite) return;
-        const myRect = this.entity.calculateCollisionRect(this.destinationX, this.destinationY, this.entity.width, this.entity.height);
+        const collisionComponent = this.entity.getComponent(CollisionComponent);
+        if (!collisionComponent) return;
+        const myRect = collisionComponent.calculateCollisionRect(this.destinationX, this.destinationY, this.entity.transform.width, this.entity.transform.height);
         this.entity.mapService.currentMap?.entities.forEach((entity) => {
-            if (!entity.components.solid) return;
-            if (this.entity.isCollidingWith(entity, myRect)) {
-                    this.destinationX = this.entity.x;
-                    this.destinationY = this.entity.y
-                }
+            if (!entity.getComponent(SolidComponent)) return;
+            if (collisionComponent.isCollidingWith(entity, myRect)) {
+                this.destinationX = this.entity.transform.position.x;
+                this.destinationY = this.entity.transform.position.y
+            }
         });
     }
 }

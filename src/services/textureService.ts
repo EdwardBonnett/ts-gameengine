@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
-import AnimationFrame from '../models/animationFrame';
+import { AnimationFrame } from '../models/animationFrame';
 import { delay, inject, singleton } from "tsyringe";
-import GameService from './gameService';
+import { GameService } from './gameService';
 
 @singleton()
-export default class TextureService {
+export class TextureService {
     textures: Record<string, PIXI.FrameObject> = {};
 
     constructor (@inject(delay(() => GameService)) private gameService: GameService) {

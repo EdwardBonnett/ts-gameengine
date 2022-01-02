@@ -1,13 +1,13 @@
 import { delay, inject, singleton } from "tsyringe";
-import Entity, { EntityParams } from "../entities/entity";
-import DebugService from "./debugService";
-import GameService from "./gameService";
-import InputService from "./inputService";
-import MapService from "./mapService";
-import TextureService from "./textureService";
+import { EntityParams, Entity } from "../entities/entity";
+import { GameService } from "./gameService";
+import { DebugService } from "./debugService";
+import { InputService } from "./inputService";
+import { MapService } from "./mapService";
+import { TextureService } from "./textureService";
 
 @singleton()
-export default class EntityService {
+export class EntityService {
 
     entities: Array<Entity> = [];
 
@@ -25,7 +25,7 @@ export default class EntityService {
 
     async createEntity (entityType: typeof Entity, params?: EntityParams) {
         const entity = new entityType(this.gameService, this.textureService, this.inputService, this.mapService, this, this.debugService);
-        entity.init(params);
+        await entity.init(params);
 
         if (entity.global) {
             const existingGlobal = this.entities.find(a => a.global && a.name === entity.name);
@@ -36,10 +36,6 @@ export default class EntityService {
             }
         }
 
-        await entity.loadResource();
-        if (entity.currentAnimation) {
-            entity.playAnimation(entity.currentAnimation);
-        }
         this.entities.push(entity);
 
         if (params?.children) {

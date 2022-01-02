@@ -1,10 +1,10 @@
 import {  delay, inject, singleton } from "tsyringe";
 import * as PIXI from 'pixi.js';
-import GameService from "./gameService";
+import { GameService } from "./gameService";
 import { TileSize } from "../consts";
 
 @singleton()
-export default class DebugService {
+export class DebugService {
 
     debugText: PIXI.Text;
 

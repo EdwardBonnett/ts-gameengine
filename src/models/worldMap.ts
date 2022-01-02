@@ -1,6 +1,6 @@
-import Entity, { EntityParams } from "../entities/entity";
+import { Entity, EntityParams } from "../entities/entity";
 
-export default class WorldMap {
+export class WorldMap {
     mapName: string = 'Map';
 
     backgroundEntity?: typeof Entity;

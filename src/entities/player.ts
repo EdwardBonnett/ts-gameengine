@@ -1,31 +1,41 @@
-import AnimationComponent from "../components/animationComponent";
-import MoveComponent from "../components/moveComponent";
-import PlayerInputComponent from "../components/playerInputComponent";
-import Entity, { EntityParams } from "./entity";
+import { AnimationComponent } from "../components/animationComponent";
+import { CollisionComponent } from "../components/collisionComponent";
+import { MoveComponent } from "../components/moveComponent";
+import { PlayerInputComponent } from "../components/playerInputComponent";
+import { RenderComponent } from "../components/renderComponent";
+import { Entity, EntityParams } from "./entity";
 
-export default class Player extends Entity {
+export class Player extends Entity {
 
-    init (params: EntityParams) {
-        super.init({
+    async init (params: EntityParams) {
+        await super.init({
             name: 'Dude3',
-            resourcePath: '/Dude3.json',
-            currentAnimation: 'Front-Walk',
-            looping: true,
+           
             global: true,
-            animated: true,
             z: 99,
             width: 16,
             height: 24,
-            collisionRect: {
-                x: 4,
-                y: 14,
-                height: 5,
-                width: 9
-            },
             debug: {
                 collisionRect: true,
             },
             components: [
+                { component: RenderComponent, props: {
+                    resourcePath: '/Dude3.json',
+                    currentAnimation: 'Front-Walk',
+                    looping: true,
+                    animated: true,
+                }},
+                { 
+                    component: CollisionComponent,
+                    props: {
+                        collisionRect: {
+                            x: 4,
+                            y: 14,
+                            height: 5,
+                            width: 19
+                        }
+                    }
+                },
                 { component: MoveComponent },
                 { component: PlayerInputComponent },
                 { 

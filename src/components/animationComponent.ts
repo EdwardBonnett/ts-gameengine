@@ -1,37 +1,31 @@
-import Entity from "../entities/entity";
-import Direction from "../models/direction";
-import Component from "./component";
+import { Direction } from "../models/direction";
+import { Component } from "./component";
+import { RenderComponent } from "./renderComponent";
 
-export default class AnimationComponent extends Component {
-
-    name = "animation";
-
+export class AnimationComponent extends Component {
     animationMap?: Record<string, string> = {};
 
     initialScale = 1;
 
-    constructor (entity: Entity) {
-        super(entity);
-    }
-
-    init (animationMap?: Record<string, string>) {
+    async init (animationMap?: Record<string, string>) {
         super.init();
-        this.initialScale = this.entity.scaleX;
+        this.initialScale = this.entity.transform.scale.x;
         this.animationMap = animationMap;
     }
 
     update () {
-        if (!this.entity.sprite) return;
-        if (this.entity.currentDirection === Direction.Left) {
-            this.entity.scaleX = -this.initialScale;
+        const renderComponent = this.entity.getComponent(RenderComponent);
+        if (!renderComponent) return;
+        if (this.entity.transform.direction === Direction.Left) {
+            this.entity.transform.localScale.x = -this.initialScale;
         } else {
-            this.entity.scaleX = this.initialScale;
+            this.entity.transform.localScale.x = this.initialScale;
         }
 
         if (!this.animationMap) return;
-        const animation = this.animationMap[this.entity.currentDirection];
-        if (animation && this.entity.currentAnimation !== animation) {
-            this.entity.playAnimation(animation);
+        const animation = this.animationMap[this.entity.transform.direction];
+        if (animation && renderComponent.currentAnimation !== animation) {
+            renderComponent.playAnimation(animation);
         }
     }
 }

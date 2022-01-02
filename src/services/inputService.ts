@@ -1,7 +1,7 @@
-import {  singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
 @singleton()
-export default class InputService {
+export class InputService {
 
     keysDown: Array<string> = [];
 

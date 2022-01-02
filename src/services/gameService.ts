@@ -1,13 +1,13 @@
 import { delay, inject, singleton } from "tsyringe";
 import * as PIXI from 'pixi.js';
-import InputService from "./inputService";
-import MapService from "./mapService";
-import MapOverworld from "../maps/mapOverworld";
+import { InputService } from "./inputService";
+import { MapService } from "./mapService";
+import { MapOverworld } from "../maps/mapOverworld";
 import { TileSize } from "../consts";
-import DebugService from "./debugService";
+import { DebugService } from "./debugService";
 
 @singleton()
-export default class GameService {
+export class GameService {
 
     public readonly ScreenWidth: number = 32;
     

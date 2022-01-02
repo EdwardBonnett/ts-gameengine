@@ -1,13 +1,11 @@
-import Component from "./component";
+import { Component } from "./component";
 
-export default class PinComponent extends Component {
-    name = "pin";
-
+export class PinComponent extends Component {
     entityId!: string;
     offsetX!: number;
     offsetY!: number;
 
-    init ({ entityId, offsetX, offsetY }: { entityId: string, offsetX: number, offsetY: number }) {
+    async init ({ entityId, offsetX, offsetY }: { entityId: string, offsetX: number, offsetY: number }) {
         super.init();
         this.entityId = entityId;
         this.offsetX = offsetX;

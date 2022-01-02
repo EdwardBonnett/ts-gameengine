@@ -1,11 +1,8 @@
-import Direction from "../models/direction";
-import Component from "./component";
-import MoveComponent from "./moveComponent";
+import { Direction } from "../models/direction";
+import { Component } from "./component";
+import { MoveComponent } from "./moveComponent";
 
-export default class PlayerInputComponent extends Component {
-
-    name = "playerInput";
-
+export class PlayerInputComponent extends Component {
     requiredComponents = ['move'];
     
     update () {
@@ -18,6 +15,6 @@ export default class PlayerInputComponent extends Component {
             case "Right": direction = Direction.Right; break;
         }
         if (!direction) return;
-        (this.entity.components.move as MoveComponent).move(direction as Direction);
+        this.entity.getComponent(MoveComponent)?.move(direction as Direction);
     }
 }

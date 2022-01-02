@@ -1,8 +1,8 @@
-import FloorTile from "../entities/floorTile";
-import Player from "../entities/player";
-import WorldMap from "../models/worldMap";
+import { FloorTile } from "../entities/floorTile";
+import { Player } from "../entities/player";
+import { WorldMap } from "../models/worldMap";
 
-export default class MapHouse extends WorldMap {
+export class MapHouse extends WorldMap {
     mapName = 'House';
 
     backgroundEntity = FloorTile;

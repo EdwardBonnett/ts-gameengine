@@ -1,4 +1,4 @@
-export default interface AnimationFrame {
+export interface AnimationFrame {
     name: string;
     from: number;
     to: number;
