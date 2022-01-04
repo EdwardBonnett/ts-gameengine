@@ -1,7 +1,8 @@
 import { singleton } from "tsyringe";
+import { ServiceAccessor } from "./serviceAccessor";
 
 @singleton()
-export class InputService {
+export class InputService extends ServiceAccessor {
 
     keysDown: Array<string> = [];
 
@@ -20,6 +21,7 @@ export class InputService {
     }
 
     constructor () {
+        super();
         this.keyDown = this.keyDown.bind(this);
         this.keyUp = this.keyUp.bind(this);
         document.addEventListener('keydown', this.keyDown, false);

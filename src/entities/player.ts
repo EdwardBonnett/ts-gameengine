@@ -17,6 +17,7 @@ export class Player extends Entity {
             height: 24,
             debug: {
                 collisionRect: true,
+                drawRaycasts: true,
             },
             components: [
                 { component: RenderComponent, props: {
@@ -32,7 +33,7 @@ export class Player extends Entity {
                             x: 4,
                             y: 14,
                             height: 5,
-                            width: 19
+                            width: 9
                         }
                     }
                 },
@@ -50,5 +51,15 @@ export class Player extends Entity {
             ],
             ...params,
         });
+    }
+
+    update (dt: number) {
+        const inFront = this.services.Physics.raycast(this, 32, 10, this.transform.direction, (entity) => {
+            return entity?.name === 'RedTile' && entity.parent !== this;
+        });
+        if (inFront && this.services.Input.isLastKeyDown('KeyV')) {
+            inFront.destroy();
+        }
+        super.update(dt);
     }
 }

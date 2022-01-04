@@ -1,30 +1,18 @@
-import { delay, inject, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 import { EntityParams, Entity } from "../entities/entity";
-import { GameService } from "./gameService";
-import { DebugService } from "./debugService";
-import { InputService } from "./inputService";
-import { MapService } from "./mapService";
-import { TextureService } from "./textureService";
+import { ServiceAccessor } from "./serviceAccessor";
 
 @singleton()
-export class EntityService {
+export class EntityService extends ServiceAccessor {
 
     entities: Array<Entity> = [];
-
-    constructor (
-        @inject(delay(() => GameService)) private gameService: GameService,
-        @inject(delay(() => InputService)) private inputService: InputService,
-        @inject(TextureService) private textureService: TextureService,
-        @inject(DebugService) private debugService: DebugService,
-        @inject(MapService) private mapService: MapService) {
-    }
 
     async createEntityFromParams (params: EntityParams) {
         this.createEntity(Entity, params);
     }
 
     async createEntity (entityType: typeof Entity, params?: EntityParams) {
-        const entity = new entityType(this.gameService, this.textureService, this.inputService, this.mapService, this, this.debugService);
+        const entity = new entityType();
         await entity.init(params);
 
         if (entity.global) {

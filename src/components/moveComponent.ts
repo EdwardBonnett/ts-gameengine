@@ -29,19 +29,19 @@ export class MoveComponent extends Component {
         this.entity.transform.position.y = this.destinationY;
     }
 
-    move (direction: Direction) {
+    move (dt: number, direction: Direction) {
         switch (direction) {
             case Direction.Up:
-                this.destinationY -= 1;
+                this.destinationY -= dt;
                 break;
             case Direction.Down:
-                this.destinationY += 1;
+                this.destinationY += dt;
                 break;
             case Direction.Left:
-                this.destinationX -= 1;
+                this.destinationX -= dt;
                 break;
             case Direction.Right:
-                this.destinationX += 1;
+                this.destinationX += dt;
                 break;
         }
         if (direction) {
@@ -53,8 +53,8 @@ export class MoveComponent extends Component {
     collisionCheck () {
         const collisionComponent = this.entity.getComponent(CollisionComponent);
         if (!collisionComponent) return;
-        const myRect = collisionComponent.calculateCollisionRect(this.destinationX, this.destinationY, this.entity.transform.width, this.entity.transform.height);
-        this.entity.mapService.currentMap?.entities.forEach((entity) => {
+        const myRect = this.services.Physics.calculateCollisionRect(this.entity, this.destinationX, this.destinationY, this.entity.transform.width, this.entity.transform.height);
+        this.services.Map.currentMap?.entities.forEach((entity) => {
             if (!entity.getComponent(SolidComponent)) return;
             if (collisionComponent.isCollidingWith(entity, myRect)) {
                 this.destinationX = this.entity.transform.position.x;

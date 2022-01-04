@@ -18,19 +18,22 @@ export class DoorComponent extends Component {
         this.destination = room;
         this.destinationX = x;
         this.destinationY = y;
+        if (!this.entity.getComponent(CollisionComponent)) {
+            this.entity.addComponent(CollisionComponent);
+        }
     }
 
     update () {
         if (!this.destination || !this.destinationX || !this.destinationY) return;
-        this.entity.mapService.currentMap?.entities?.forEach((entity) => {
-            if (entity.getComponent(PlayerInputComponent) && (this.entity.getComponent(CollisionComponent)).isCollidingWith(entity)) {
-                this.entity.mapService.changeMap(this.destination!);
+        this.services.Map.currentMap?.entities?.forEach((entity) => {
+            if (entity.getComponent(PlayerInputComponent) && this.entity.getComponent(CollisionComponent)?.isCollidingWith(entity)) {
+                this.services.Map.changeMap(this.destination!);
                 entity.transform.position.x = this.destinationX! * TileSize;
                 entity.transform.position.y = this.destinationY! * TileSize;
-                // if (entity.components.move) {
-                //     (entity.components.move as MoveComponent).destinationX = this.destinationX! * TileSize;
-                //     (entity.components.move as MoveComponent).destinationY = this.destinationY! * TileSize;
-                // }
+                if (entity.getComponent(MoveComponent)) {
+                    entity.getComponent(MoveComponent).destinationX = this.destinationX! * TileSize;
+                    entity.getComponent(MoveComponent).destinationY = this.destinationY! * TileSize;
+                }
             }
         });
         

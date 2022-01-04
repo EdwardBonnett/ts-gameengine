@@ -40,25 +40,25 @@ export class RenderComponent extends Component {
 
     async loadResource () {
         if (this.resourcePath && this.resourceName) {
-            await this.entity.textureService.loadResource(this.resourcePath, this.resourceName);
+            await this.services.Textures.loadResource(this.resourcePath, this.resourceName);
         }
     }
 
     private createSprite (animationName: string, resourceName?: string) {
         if (!this.resourceName) return;
-        const frames = this.entity.textureService.getTextureNamesFromAnimation(resourceName ?? this.resourceName, animationName);
-        const textures = this.entity.textureService.getTextures(this.resourceName, frames);
+        const frames = this.services.Textures.getTextureNamesFromAnimation(resourceName ?? this.resourceName, animationName);
+        const textures = this.services.Textures.getTextures(this.resourceName, frames);
         this.sprite = new PIXI.AnimatedSprite(textures);
         this.sprite.anchor.set(0.5, 0.5);
         this.sprite.zIndex = this.entity.transform.position.z;
         if (this.entity.parent && this.entity.parent.getComponent(RenderComponent)) {
             this.entity.parent.getComponent(RenderComponent).sprite.addChild(this.sprite);
         } else {
-            this.entity.gameService.App.stage.addChild(this.sprite);
+            this.services.Game.App.stage.addChild(this.sprite);
         }
         this.sprite.interactive = true;
         this.sprite.on('mouseover', () => {
-            this.entity.debugService.setDebugText(this.entity.transform.scale.x.toString());
+            this.services.Debug.setDebugText(this.entity.transform.scale.x.toString());
         });
         if (!this.visible) {
             this.sprite.visible = false;
@@ -70,8 +70,8 @@ export class RenderComponent extends Component {
         if (!this.sprite) {
             this.createSprite(animationName, this.resourceName ?? resourceName);
         } else {
-            const frames = this.entity.textureService.getTextureNamesFromAnimation(this.resourceName ?? resourceName!, animationName);
-            const textures = this.entity.textureService.getTextures(this.resourceName ?? resourceName!, frames);
+            const frames = this.services.Textures.getTextureNamesFromAnimation(this.resourceName ?? resourceName!, animationName);
+            const textures = this.services.Textures.getTextures(this.resourceName ?? resourceName!, frames);
             this.sprite.textures = textures;
         }
         this.currentAnimation = animationName;

@@ -16,42 +16,43 @@ export class MapOverworld extends WorldMap {
     backgroundEntity = FloorTile;
 
     entitiesToLoad:  Array<{ config: EntityParams, entity: typeof Entity}> = [
-        // {
-        //     entity: RedTile, 
-        //     config: {  
-        //         x: 10, 
-        //         y: 5, 
-        //         scaleX: 1, 
-        //         scaleY: 1, 
-        //         // components: [{ component: DoorComponent }], 
-        //         componentProps: { door: { room: MapHouse, x: 15, y: 3 } }},
-        // },
-        // {
-        //     entity: RedTile, 
-        //     config: {  
-        //         x: 10, 
-        //         y: 10, 
-        //         scaleX: 1, 
-        //         scaleY: 1, 
-        //         components: [
-        //             { component: SolidComponent },
-        //             { component: PushableComponent },
-        //             { component: CollisionComponent, },
-        //             {
-        //                 component: RenderComponent, 
-        //                 props: {
-        //                     resourceName: 'FloorTile',
-        //                     resourcePath: '/FloorTile.json',
-        //                     currentAnimation: 'RedTile',
-        //                     looping: false
-        //                 }
-        //             }
-        //         ], 
-        //         debug: {
-        //             collisionRect: true
-        //         }
-        //     }
-        // },
+        {
+            entity: RedTile, 
+            config: {  
+                x: 10, 
+                y: 5, 
+                scaleX: 1, 
+                scaleY: 1, 
+                components: [{ component: DoorComponent, props:  { room: MapHouse, x: 15, y: 3 }  }], 
+            }
+        },
+        {
+            entity: RedTile, 
+            config: {  
+                x: 10, 
+                y: 10, 
+                scaleX: 1, 
+                scaleY: 1, 
+                z: 99,
+                components: [
+                    { component: SolidComponent },
+                    { component: PushableComponent },
+                    { component: CollisionComponent, },
+                    {
+                        component: RenderComponent, 
+                        props: {
+                            resourceName: 'FloorTile',
+                            resourcePath: '/FloorTile.json',
+                            currentAnimation: 'RedTile',
+                            looping: false
+                        }
+                    }
+                ], 
+                debug: {
+                    collisionRect: true
+                }
+            }
+        },
         { 
             entity: Player,
             config: { x: 5, y: 5, children: [
@@ -67,7 +68,8 @@ export class MapOverworld extends WorldMap {
                                     resourceName: 'FloorTile',
                                     resourcePath: '/FloorTile.json',
                                     currentAnimation: 'RedTile',
-                                    looping: false
+                                    looping: false,
+                                    visible: false,
                                 }
                             }
                         ],

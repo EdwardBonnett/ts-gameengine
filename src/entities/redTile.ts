@@ -22,7 +22,7 @@ export class RedTile extends Entity {
     }
 
     update(): void {
-         if (this.inputService.isKeyPressed('KeyB')) {
+         if (this.services.Input.isKeyPressed('KeyB')) {
              this.transform.scale.x += 1;
          }
          super.update();

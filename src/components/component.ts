@@ -1,6 +1,7 @@
 import { Entity } from "../entities/entity";
+import { ServiceAccessor } from "../services/serviceAccessor";
 
-export class Component {
+export class Component extends ServiceAccessor {
 
     get name () { return this.constructor.name };
 
@@ -9,6 +10,7 @@ export class Component {
     requiredComponents: Array<string> = [];
 
     constructor (entity: Entity) {
+        super();
         this.entity = entity;
     }
     
@@ -22,7 +24,7 @@ export class Component {
 
     }
 
-    update () {
+    update (dt?: number) {
 
     }
 

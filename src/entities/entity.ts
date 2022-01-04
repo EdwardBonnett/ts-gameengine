@@ -1,12 +1,7 @@
 import { Component } from '../components/component';
 import { TransformComponent } from '../components/transform/transformComponent';
 import { TileSize } from '../consts';
-import { DebugService } from '../services/debugService';
-import { EntityService } from '../services/entityService';
-import { GameService } from '../services/gameService';
-import { InputService } from '../services/inputService';
-import { MapService } from '../services/mapService';
-import { TextureService } from '../services/textureService';
+import { ServiceAccessor } from '../services/serviceAccessor';
 
 export interface EntityParams {
     id?: string;
@@ -22,6 +17,7 @@ export interface EntityParams {
     global?: boolean;
     debug?: {
         collisionRect?: boolean;
+        drawRaycasts?: boolean;
     };
     parent?: Entity;
     children?: Array<{
@@ -30,7 +26,9 @@ export interface EntityParams {
     }>;
 }
 
-export class Entity {
+export class Entity extends ServiceAccessor {
+    get type () { return 'entity' };
+
     name = 'Entity';
     
     private _components: Record<string, Component> = {};
@@ -49,17 +47,8 @@ export class Entity {
 
     debug?: {
         collisionRect?: boolean;
+        drawRaycasts?: boolean;
     } = {}
-
-
-    constructor (
-        public gameService: GameService, 
-        public textureService: TextureService, 
-        public inputService: InputService, 
-        public mapService: MapService,
-        public entityService: EntityService, 
-        public debugService: DebugService) {
-    }
 
     async init (params?: EntityParams) {
         if (!params) params = {};
@@ -82,7 +71,7 @@ export class Entity {
         const componentProps: Record<string, unknown> = {};
 
         (params.components ?? []).forEach((component) => {
-            this.addComponent(component.component);
+            this.addComponent(component.component, null, false);
             componentProps[component.component.name] = component.props;
         });
     
@@ -103,7 +92,7 @@ export class Entity {
         }
         this._components[component.name] = new component(this);
         if (initialise) {
-            this._components[component.name].init(props);
+            this._components[component.name].init(props ?? {});
         }
     }
 
@@ -118,23 +107,33 @@ export class Entity {
         return Object.values(this._components);
     }
    
-    update () {
+    update (dt: number) {
         Object.values(this._components).forEach((component) => {
-            component.update();
+            component.update(dt);
         });
         this.children.forEach((child) => {
-            child.update();
+            child.update(dt);
         });
+    }
+
+    removeChild (entity: Entity) {
+        const index = this.children?.indexOf(entity) ?? -1;
+        if (index > -1) {
+            this.children?.splice(index, 1);
+        }
     }
 
     destroy () {
         Object.values(this._components).forEach((component) => {
             component.destroy();
         });
-        this.entityService.removeEntity(this);
-        this.debugService.removeDebugRectangle(this.id);
+        this.services.Entity.removeEntity(this);
+        this.services.Map.removeEntityFromMap(this);
+        this.services.Debug.removeRectangle(this.id);
+        this.services.Debug.removeLine(this.id);
         this.children.forEach((child) => {
             child.destroy();
         });
+        if (this.parent) this.parent.removeChild(this);
     }
  }

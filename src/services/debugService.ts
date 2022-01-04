@@ -1,47 +1,68 @@
-import {  delay, inject, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 import * as PIXI from 'pixi.js';
-import { GameService } from "./gameService";
 import { TileSize } from "../consts";
-
+import { ServiceAccessor } from "./serviceAccessor";
 @singleton()
-export class DebugService {
+export class DebugService extends ServiceAccessor {
 
-    debugText: PIXI.Text;
+    debugText!: PIXI.Text;
 
-    fpsCounter: PIXI.Text;
+    fpsCounter!: PIXI.Text;
 
     debugGraphics: Record<string, PIXI.Graphics> = {};
-    
-    constructor (
-        @inject(delay(() => GameService)) private gameService: GameService,
-    ) {
+
+    init () {
         this.fpsCounter = new PIXI.Text('FPS:', { fontFamily : 'Arial', fontSize: 12, fill : 0xff1010, align : 'left' });
         this.fpsCounter.zIndex = 999;
         this.debugText = new PIXI.Text('', { fontFamily : 'Arial', fontSize: 12, fill : 0xffffff, align : 'right' });
-        this.debugText.x = gameService.ScreenWidth * TileSize;
+        this.debugText.x = this.services.Game.ScreenWidth * TileSize;
         this.debugText.anchor.x = 1;
         this.debugText.zIndex = 999;
-        this.gameService.App.stage.addChild(this.fpsCounter);
-        this.gameService.App.stage.addChild(this.debugText);
+        this.services.Game.App.stage.addChild(this.fpsCounter);
+        this.services.Game.App.stage.addChild(this.debugText);
     }
 
     setDebugText (text: string) {
         this.debugText.text = text;
     }
 
-    drawDebugRectangle (id: string, rect?: PIXI.Rectangle) {
-        if (!rect) return;
+    drawLine (id: string, line?: { xFrom: number; yFrom: number; xTo: number; yTo: number }) {
+        if (!line) return;
+        id = `line${id}`;
         if (!this.debugGraphics[id]) {
             this.debugGraphics[id] = new PIXI.Graphics();
             this.debugGraphics[id].zIndex = 999;
-            this.gameService.App.stage.addChild(this.debugGraphics[id]);
+            this.services.Game.App.stage.addChild(this.debugGraphics[id]);
+        }  
+        this.debugGraphics[id].clear();
+        
+        this.debugGraphics[id].lineStyle(1, 0xffffff)
+               .moveTo(line.xFrom, line.yFrom)
+               .lineTo(line.xTo, line.yTo);
+    }
+
+    removeLine (id: string) {
+        id = `line${id}`;
+        if (!this.debugGraphics[id]) return;
+        this.debugGraphics[id].destroy();
+        delete this.debugGraphics[id];
+    }
+
+    drawRectangle (id: string, rect?: PIXI.Rectangle) {
+        if (!rect) return;
+        id = `rectangle${id}`;
+        if (!this.debugGraphics[id]) {
+            this.debugGraphics[id] = new PIXI.Graphics();
+            this.debugGraphics[id].zIndex = 999;
+            this.services.Game.App.stage.addChild(this.debugGraphics[id]);
         }
         this.debugGraphics[id].clear();
         this.debugGraphics[id].lineStyle(1, 0xFF0000);
         this.debugGraphics[id].drawRect(rect.x, rect.y, rect.width, rect.height)
     }
 
-    removeDebugRectangle (id: string) {
+    removeRectangle (id: string) {
+        id = `rectangle${id}`;
         if (!this.debugGraphics[id]) return;
         this.debugGraphics[id].destroy();
         delete this.debugGraphics[id];
@@ -49,6 +70,6 @@ export class DebugService {
     
 
     update () {
-        this.fpsCounter.text = Math.round(this.gameService.App.ticker.FPS).toString();
+        this.fpsCounter.text = Math.round(this.services.Game.App.ticker.FPS).toString();
     }
 }
