@@ -1,10 +1,9 @@
-import { Entity } from "../../entities/entity";
+import { IEntity } from '../../entities/interfaces/IEntity';
 
 export class Position {
+    entity!: IEntity;
 
-    entity!: Entity;
-
-    init (entity: Entity) {
+    init (entity: IEntity) {
         this.entity = entity;
         return this;
     }
@@ -32,5 +31,4 @@ export class Position {
     set z (val: number) {
         this.entity.transform.localPosition.z = val - (this.entity.parent?.transform.position.z ?? 0);
     }
-
 }

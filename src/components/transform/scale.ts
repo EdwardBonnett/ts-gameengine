@@ -1,9 +1,9 @@
-import { Entity } from "../../entities/entity";
+import { IEntity } from '../../entities/interfaces/IEntity';
 
 export class Scale {
-    entity!: Entity;
+    entity!: IEntity;
 
-    init (entity: Entity) {
+    init (entity: IEntity) {
         this.entity = entity;
         return this;
     }

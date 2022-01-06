@@ -1,14 +1,20 @@
-import { Entity, EntityParams } from "../entities/entity";
+import { Entity } from '../entities/entity';
+import { IEntity } from '../entities/interfaces/IEntity';
+import { IEntityParams } from '../entities/interfaces/IEntityParams';
 
 export class WorldMap {
-    mapName: string = 'Map';
+    mapName = 'Map';
 
     backgroundEntity?: typeof Entity;
 
+    width = 64;
+
+    height = 64;
+
     entitiesToLoad: Array<{
-        config: EntityParams,
+        config: IEntityParams,
         entity: typeof Entity
     }> = [];
 
-    entities: Array<Entity> = [];
+    entities: Array<IEntity> = [];
 }

@@ -10,12 +10,12 @@
       "resolveJsonModule": true,
       "esModuleInterop": true,
       "noEmit": true,
+      "importHelpers": true,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noImplicitReturns": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
     },
-    "include": ["./src"]
-  }
-  
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+}

@@ -1,47 +1,38 @@
-import { delay, inject, singleton } from "tsyringe";
+import { singleton } from 'tsyringe';
 import * as PIXI from 'pixi.js';
-import { InputService } from "./inputService";
-import { MapService } from "./mapService";
-import { MapOverworld } from "../maps/mapOverworld";
-import { TileSize } from "../consts";
-import { DebugService } from "./debugService";
-import { ServiceAccessor } from "./serviceAccessor";
+import { MapOverworld } from '../maps/mapOverworld';
+import { Service } from './service';
+import { IGameService } from './interfaces/IGameService';
 
 @singleton()
-export class GameService extends ServiceAccessor {
-
-    public readonly ScreenWidth: number = 32;
-    
-    public readonly ScreenHeight: number = 16;
-    
-    public readonly App: PIXI.Application;
-
-    timer = 0;
+export class GameService extends Service implements IGameService {
+    readonly _app: PIXI.Application;
 
     constructor () {
         super();
-        this.App = new PIXI.Application({
-            width: this.ScreenWidth * TileSize,
-            height: this.ScreenHeight * TileSize,
-            backgroundColor: 0x666666,
-            // autoDensity: true,
-            // resizeTo: window,
-            // resolution: window.devicePixelRatio,
+        const el = document.getElementById('game') as HTMLElement;
+        this._app = new PIXI.Application({
+            width: 320,
+            height: 320,
+            backgroundColor: 0x333333,
+            autoDensity: true,
+            resizeTo: window,
+            resolution: window.devicePixelRatio,
         });
-        document.body.appendChild(this.App.view);
-        this.App.ticker.add((dt: number) => this.update(dt));
+        el.appendChild(this._app.view);
+        this._app.ticker.add((dt: number) => this.update(dt));
     }
 
     init () {
-        this.services.Map.changeMap(MapOverworld);
+        this.services.Render.init();
         this.services.Debug.init();
+        this.services.Map.changeMap(MapOverworld);
     }
 
     update (dt: number) {
-        this.timer += dt;
         this.services.Map.update(dt);
-        this.services.Input.update();
         this.services.Debug.update();
-        this.App.stage.sortChildren();
+        this.services.Render.update();
+        this.services.Input.update();
     }
 }

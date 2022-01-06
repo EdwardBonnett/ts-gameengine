@@ -1,4 +1,4 @@
-import { Component } from "./component";
+import { Component } from './component';
 
 export class PushableComponent extends Component {
     update () {
@@ -9,7 +9,7 @@ export class PushableComponent extends Component {
         //            this.entity.x += 64;
         //         }
         //     });
-            
+
         // }
     }
 }

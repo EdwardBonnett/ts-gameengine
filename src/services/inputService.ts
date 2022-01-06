@@ -1,23 +1,23 @@
-import { singleton } from "tsyringe";
-import { ServiceAccessor } from "./serviceAccessor";
+import { singleton } from 'tsyringe';
+import { IInputService } from './interfaces/IInputService';
+import { Service } from './service';
 
 @singleton()
-export class InputService extends ServiceAccessor {
-
+export class InputService extends Service implements IInputService {
     keysDown: Array<string> = [];
 
     lastKeysDown: Array<string> = [];
 
     keyMap: Record<string, string> = {
-        "ArrowLeft": "Left",
-        "ArrowRight": "Right",
-        "ArrowDown": "Down",
-        "ArrowUp": "Up",
-        "KeyA": "Left",
-        "KeyD": "Right",
-        "KeyS": "Down",
-        "KeyW": "Up",
-        "KeyE": "Action"
+        ArrowLeft: 'Left',
+        ArrowRight: 'Right',
+        ArrowDown: 'Down',
+        ArrowUp: 'Up',
+        KeyA: 'Left',
+        KeyD: 'Right',
+        KeyS: 'Down',
+        KeyW: 'Up',
+        KeyE: 'Action',
     }
 
     constructor () {
@@ -62,12 +62,12 @@ export class InputService extends ServiceAccessor {
     isKeyUp (key: string) {
         return !this.isKeyDown(key);
     }
- 
+
     isKeyReleased (key: string) {
         return this.keysDown.indexOf(key) === -1 && this.lastKeysDown.indexOf(key) > -1;
     }
 
     update () {
-        this.lastKeysDown = [...this.keysDown ];
+        this.lastKeysDown = [...this.keysDown];
     }
 }

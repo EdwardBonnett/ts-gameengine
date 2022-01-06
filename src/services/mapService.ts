@@ -1,12 +1,12 @@
-import { singleton } from "tsyringe";
-import { TileSize } from "../consts";
-import { Entity } from "../entities/entity";
-import { WorldMap } from "../models/worldMap";
-import { ServiceAccessor } from "./serviceAccessor";
+import { singleton } from 'tsyringe';
+import { TileSize } from '../consts';
+import { Entity } from '../entities/entity';
+import { WorldMap } from '../models/worldMap';
+import { IMapService } from './interfaces/IMapService';
+import { Service } from './service';
 
 @singleton()
-export class MapService extends ServiceAccessor {
-
+export class MapService extends Service implements IMapService {
     currentMap?: WorldMap;
 
     async changeMap (map: typeof WorldMap) {
@@ -14,18 +14,21 @@ export class MapService extends ServiceAccessor {
         await this.loadMap(map);
     }
 
-    async loadMap (map: typeof WorldMap) {
-        this.currentMap = new map();
+    async loadMap (Map: typeof WorldMap) {
+        this.currentMap = new Map();
 
         if (this.currentMap.backgroundEntity) {
-            for (let x = 0; x < 30;  x += 1) {
-                for (let y = 0; y < 30;  y += 1) {
-                    this.currentMap.entities.push(await this.services.Entity.createEntity(this.currentMap.backgroundEntity, {
-                        x: x * TileSize,
-                        y: y * TileSize,
-                    }));
-                }
-            }
+            this.currentMap.entities.push(await this.services.Entity.createEntity(this.currentMap.backgroundEntity, {
+                x: this.currentMap.width * TileSize * 0.5,
+                y: this.currentMap.height * TileSize * 0.5,
+                componentProps: {
+                    RenderComponent: {
+                        spriteType: 'tiled',
+                        tiledWidth: this.currentMap.width * TileSize,
+                        tiledHeight: this.currentMap.height * TileSize,
+                    },
+                },
+            }));
         }
 
         for (let i = 0; i < this.currentMap.entitiesToLoad.length; i += 1) {
@@ -33,24 +36,24 @@ export class MapService extends ServiceAccessor {
             this.currentMap.entities.push(await this.services.Entity.createEntity(entity.entity, {
                 ...(entity.config || {}),
                 x: (entity.config?.x ?? 0) * TileSize,
-                y: (entity.config?.y ?? 0)* TileSize,
+                y: (entity.config?.y ?? 0) * TileSize,
             }));
         }
     }
 
     unloadMap () {
         if (!this.currentMap) return;
-        debugger;
-        for (let i = this.currentMap.entities.length - 1; i > 0; i -=1 ) {
+        for (let i = this.currentMap.entities.length - 1; i > 0; i -= 1) {
             const entity = this.currentMap.entities[i];
             if (!entity.global) entity.destroy();
         }
-    
+
         this.currentMap.entities = [];
     }
 
     update (dt: number) {
-        this.currentMap!.entities.forEach((entity) => {
+        if (!this.currentMap) return;
+        this.currentMap.entities.forEach((entity) => {
             entity?.update(dt);
         });
     }
@@ -75,5 +78,4 @@ export class MapService extends ServiceAccessor {
         const tileY = this.positionToTilePos(y);
         return this.currentMap?.entities.filter(a => this.positionToTilePos(a.transform.position.x) === tileX && this.positionToTilePos(a.transform.position.y) === tileY && a !== ignoreEntity);
     }
-
 }

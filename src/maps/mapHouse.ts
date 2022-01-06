@@ -1,12 +1,12 @@
-import { FloorTile } from "../entities/floorTile";
-import { Player } from "../entities/player";
-import { WorldMap } from "../models/worldMap";
+import { FloorTile } from '../entities/floorTile';
+import { Player } from '../entities/player';
+import { WorldMap } from '../models/worldMap';
 
 export class MapHouse extends WorldMap {
     mapName = 'House';
 
     backgroundEntity = FloorTile;
-    
+
     entitiesToLoad = [
         { entity: Player, config: { x: 5, y: 5 } },
     ]

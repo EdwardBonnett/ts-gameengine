@@ -1,5 +1,5 @@
-import { Entity } from "../../entities/entity";
-import { IPosition } from "./IPosition";
+import { IEntity } from '../../entities/interfaces/IEntity';
+import { IPosition } from './IPosition';
 
 export class LocalPosition implements IPosition {
     z = 0;
@@ -8,9 +8,9 @@ export class LocalPosition implements IPosition {
 
     private _y = 0;
 
-    entity!: Entity;
+    entity!: IEntity;
 
-    init (entity: Entity) {
+    init (entity: IEntity) {
         this.entity = entity;
         return this;
     }

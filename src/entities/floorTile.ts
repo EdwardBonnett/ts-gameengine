@@ -1,23 +1,23 @@
-import { RenderComponent } from "../components/renderComponent";
-import { Entity, EntityParams } from "./entity";
+import { RenderComponent } from '../components/renderComponent';
+import { Entity } from './entity';
+import { IEntityParams } from './interfaces/IEntityParams';
 
 export class FloorTile extends Entity {
-    async init (params: EntityParams) {
+    async init (params: IEntityParams) {
         await super.init({
             name: 'FloorTile',
             components: [
                 {
-                    component: RenderComponent, 
+                    component: RenderComponent,
                     props: {
                         resourceName: 'FloorTile',
                         resourcePath: '/FloorTile.json',
                         currentAnimation: 'FloorTile',
-                        looping: false
-                    }
-                }
+                        looping: false,
+                    },
+                },
             ],
             ...params,
         });
     }
-
 }

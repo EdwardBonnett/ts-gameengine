@@ -1,6 +1,6 @@
-import { Direction } from "../models/direction";
-import { Component } from "./component";
-import { RenderComponent } from "./renderComponent";
+import { Direction } from '../models/direction';
+import { Component } from './component';
+import { RenderComponent } from './renderComponent';
 
 export class AnimationComponent extends Component {
     animationMap?: Record<string, string> = {};

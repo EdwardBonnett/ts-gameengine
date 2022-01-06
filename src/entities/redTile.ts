@@ -1,30 +1,30 @@
-import { RenderComponent } from "../components/renderComponent";
-import { Entity, EntityParams } from "./entity";
+import { RenderComponent } from '../components/renderComponent';
+import { Entity } from './entity';
+import { IEntityParams } from './interfaces/IEntityParams';
 
 export class RedTile extends Entity {
-    async init (params: EntityParams) {
+    async init (params: IEntityParams) {
         await super.init({
             name: 'RedTile',
             components: [
                 {
-                    component: RenderComponent, 
+                    component: RenderComponent,
                     props: {
                         resourceName: 'FloorTile',
                         resourcePath: '/FloorTile.json',
                         currentAnimation: 'RedTile',
-                        looping: false
-                    }
+                        looping: false,
+                    },
                 },
-                ...(params.components ?? [])
             ],
             ...params,
         });
     }
 
-    update(): void {
-         if (this.services.Input.isKeyPressed('KeyB')) {
-             this.transform.scale.x += 1;
-         }
-         super.update();
+    update (dt: number): void {
+        if (this.services.Input.isKeyPressed('KeyB')) {
+            this.transform.scale.x += 1;
+        }
+        super.update(dt);
     }
 }

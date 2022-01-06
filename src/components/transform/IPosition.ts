@@ -1,7 +1,7 @@
-import { Entity } from "../../entities/entity";
+import { IEntity } from '../../entities/interfaces/IEntity';
 
 export interface IPosition {
-    init (entity: Entity): IPosition;
+    init (entity: IEntity): IPosition;
     x: number;
     y: number;
     z: number;

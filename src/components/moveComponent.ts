@@ -1,7 +1,7 @@
-import { Direction } from "../models/direction";
-import { CollisionComponent } from "./collisionComponent";
-import { Component } from "./component";
-import { SolidComponent } from "./solidComponent";
+import { Direction } from '../models/direction';
+import { CollisionComponent } from './collisionComponent';
+import { Component } from './component';
+import { SolidComponent } from './solidComponent';
 
 export class MoveComponent extends Component {
     destinationX = 0;
@@ -31,18 +31,18 @@ export class MoveComponent extends Component {
 
     move (dt: number, direction: Direction) {
         switch (direction) {
-            case Direction.Up:
-                this.destinationY -= dt;
-                break;
-            case Direction.Down:
-                this.destinationY += dt;
-                break;
-            case Direction.Left:
-                this.destinationX -= dt;
-                break;
-            case Direction.Right:
-                this.destinationX += dt;
-                break;
+        case Direction.Up:
+            this.destinationY -= dt;
+            break;
+        case Direction.Down:
+            this.destinationY += dt;
+            break;
+        case Direction.Left:
+            this.destinationX -= dt;
+            break;
+        case Direction.Right:
+            this.destinationX += dt;
+            break;
         }
         if (direction) {
             this.entity.transform.direction = direction;
@@ -58,7 +58,7 @@ export class MoveComponent extends Component {
             if (!entity.getComponent(SolidComponent)) return;
             if (collisionComponent.isCollidingWith(entity, myRect)) {
                 this.destinationX = this.entity.transform.position.x;
-                this.destinationY = this.entity.transform.position.y
+                this.destinationY = this.entity.transform.position.y;
             }
         });
     }

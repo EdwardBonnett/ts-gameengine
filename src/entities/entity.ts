@@ -2,47 +2,26 @@ import { Component } from '../components/component';
 import { TransformComponent } from '../components/transform/transformComponent';
 import { TileSize } from '../consts';
 import { ServiceAccessor } from '../services/serviceAccessor';
+import { IEntity } from './interfaces/IEntity';
+import { IEntityParams } from './interfaces/IEntityParams';
 
-export interface EntityParams {
-    id?: string;
-    name?: string;
-    x?: number;
-    y?: number;
-    z?: number;
-    width?: number;
-    height?: number;
-    scaleX?: number;
-    scaleY?: number;
-    components?: Array<{ component:  typeof Component, props?: unknown }>;
-    global?: boolean;
-    debug?: {
-        collisionRect?: boolean;
-        drawRaycasts?: boolean;
-    };
-    parent?: Entity;
-    children?: Array<{
-        config: EntityParams,
-        entity: typeof Entity
-    }>;
-}
-
-export class Entity extends ServiceAccessor {
-    get type () { return 'entity' };
+export class Entity implements IEntity {
+    get type (): 'entity' { return 'entity'; }
 
     name = 'Entity';
-    
+
     private _components: Record<string, Component> = {};
 
     currentAction?: string;
 
     global = false;
 
-    id: string = '';
- 
-    children: Array<Entity> = [];
+    id = '';
 
-    parent?: Entity;
-    
+    children: Array<IEntity> = [];
+
+    parent?: IEntity;
+
     transform!: TransformComponent;
 
     debug?: {
@@ -50,31 +29,33 @@ export class Entity extends ServiceAccessor {
         drawRaycasts?: boolean;
     } = {}
 
-    async init (params?: EntityParams) {
+    services = new ServiceAccessor().services;
+
+    async init (params?: IEntityParams) {
         if (!params) params = {};
         this.transform = new TransformComponent(this);
         this.id = params.id ?? Math.random().toString();
         this.name = params.name ?? 'Entity';
         this.parent = params.parent;
-      
+
         this.transform.localPosition.x = params.x ?? 0;
-        this.transform.localPosition.y = params.y ?? 0
+        this.transform.localPosition.y = params.y ?? 0;
         this.transform.localPosition.z = params.z ?? 0;
         this.transform.localScale.x = params.scaleX ?? 1;
         this.transform.localScale.y = params.scaleY ?? 1;
         this.transform.width = params.width ?? TileSize;
         this.transform.height = params.height ?? TileSize;
-  
+
         this.global = params.global ?? false;
         this.debug = params.debug;
 
-        const componentProps: Record<string, unknown> = {};
+        const componentProps: Record<string, object> = params.componentProps ?? {};
 
-        (params.components ?? []).forEach((component) => {
+        [...(params.components ?? []), ...(params.additionalComponents ?? [])].forEach((component) => {
             this.addComponent(component.component, null, false);
-            componentProps[component.component.name] = component.props;
+            componentProps[component.component.name] = { ...(component.props ?? {}), ...componentProps[component.component.name] };
         });
-    
+
         const components = this.getAllComponents();
         for (let i = 0; i < components.length; i += 1) {
             const component = components[i];
@@ -82,21 +63,21 @@ export class Entity extends ServiceAccessor {
         }
     }
 
-    getComponent<T extends Component>(component: { new (entity: Entity): T }) {
+    getComponent<T extends Component> (component: { new (entity: Entity): T }) {
         return this._components[component.name] as T;
     }
 
-    addComponent<T extends Component>(component: { new (entity: Entity): T }, props?: unknown, initialise: boolean = true) {
-        if (this._components[component.name]) {
-            console.warn(`Component ${component.name} had already been added, replacing`);
+    addComponent<T extends Component> (ComponentType: { new (entity: Entity): T }, props?: unknown, initialise = true) {
+        if (this._components[ComponentType.name]) {
+            console.warn(`Component ${ComponentType.name} had already been added, replacing`);
         }
-        this._components[component.name] = new component(this);
+        this._components[ComponentType.name] = new ComponentType(this);
         if (initialise) {
-            this._components[component.name].init(props ?? {});
+            this._components[ComponentType.name].init(props ?? {});
         }
     }
 
-    removeComponent<T extends Component>(component: { new (entity: Entity): T }) {
+    removeComponent<T extends Component> (component: { new (entity: Entity): T }) {
         if (this._components[component.name]) {
             this._components[component.name].destroy();
             delete this._components[component.name];
@@ -106,7 +87,7 @@ export class Entity extends ServiceAccessor {
     getAllComponents () {
         return Object.values(this._components);
     }
-   
+
     update (dt: number) {
         Object.values(this._components).forEach((component) => {
             component.update(dt);
@@ -136,4 +117,4 @@ export class Entity extends ServiceAccessor {
         });
         if (this.parent) this.parent.removeChild(this);
     }
- }
+}

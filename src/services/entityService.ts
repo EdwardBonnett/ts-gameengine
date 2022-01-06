@@ -1,18 +1,20 @@
-import { singleton } from "tsyringe";
-import { EntityParams, Entity } from "../entities/entity";
-import { ServiceAccessor } from "./serviceAccessor";
+import { singleton } from 'tsyringe';
+import { Entity } from '../entities/entity';
+import { IEntity } from '../entities/interfaces/IEntity';
+import { IEntityParams } from '../entities/interfaces/IEntityParams';
+import { IEntityService } from './interfaces/IEntityService';
+import { Service } from './service';
 
 @singleton()
-export class EntityService extends ServiceAccessor {
+export class EntityService extends Service implements IEntityService {
+    entities: Array<IEntity> = [];
 
-    entities: Array<Entity> = [];
-
-    async createEntityFromParams (params: EntityParams) {
-        this.createEntity(Entity, params);
+    async createEntityFromParams (params: IEntityParams) {
+        return this.createEntity(Entity, params);
     }
 
-    async createEntity (entityType: typeof Entity, params?: EntityParams) {
-        const entity = new entityType();
+    async createEntity (EntityType: typeof Entity, params?: IEntityParams) {
+        const entity = new EntityType();
         await entity.init(params);
 
         if (entity.global) {
@@ -29,8 +31,8 @@ export class EntityService extends ServiceAccessor {
         if (params?.children) {
             params.children?.forEach(async (child) => {
                 const childEntity = await this.createEntity(
-                    child.entity, 
-                    { ...child.config, parent: entity }
+                    child.entity,
+                    { ...child.config, parent: entity },
                 );
                 entity.children.push(childEntity);
             });

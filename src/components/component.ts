@@ -1,21 +1,26 @@
-import { Entity } from "../entities/entity";
-import { ServiceAccessor } from "../services/serviceAccessor";
+import { IEntity } from '../entities/interfaces/IEntity';
+import { ServiceAccessor } from '../services/serviceAccessor';
 
-export class Component extends ServiceAccessor {
+export class Component {
+    get name () { return this.constructor.name; }
 
-    get name () { return this.constructor.name };
-
-    entity: Entity;
+    entity: IEntity;
 
     requiredComponents: Array<string> = [];
 
-    constructor (entity: Entity) {
-        super();
+    serviceAccessor?: ServiceAccessor;
+
+    get services () {
+        if (!this.serviceAccessor) this.serviceAccessor = new ServiceAccessor();
+        return this.serviceAccessor.services;
+    }
+
+    constructor (entity: IEntity) {
         this.entity = entity;
     }
-    
 
-    async init (_props?: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async init (_props?: unknown) {
         // this.requiredComponents.forEach((component) => {
         //     if (!this.entity.components[component]) {
         //         console.error(`ERROR: ${this.name} requires component ${component} to be present on entity ${this.entity.name}`)
@@ -24,12 +29,12 @@ export class Component extends ServiceAccessor {
 
     }
 
-    update (dt?: number) {
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    update (_dt?: number) {
+        // To override
     }
 
     destroy () {
-
+        // To override
     }
-
 }
