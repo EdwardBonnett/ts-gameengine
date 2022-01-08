@@ -1,6 +1,7 @@
 <template>
     <div class="message" v-if="message">
         {{ message }}
+        <button @click="message = ''">x</button>
     </div>
 </template>
 

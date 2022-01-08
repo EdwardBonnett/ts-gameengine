@@ -26,7 +26,8 @@ export class DebugService extends Service implements IDebugService {
         this.debugText.anchor.x = 1;
         this.services.Render.createLayer(this.layerName, 999, false);
         this.services.Render.createLayer(this.guiLayerName, 999, true);
-        this.services.Render.getLayer(this.layerName).visible = true;
+        const layer = this.services.Render.getLayer(this.layerName);
+        if (layer) layer.visible = true;
         this.services.Render.addToStage(this.fpsCounter, this.guiLayerName);
         this.services.Render.addToStage(this.debugText, this.guiLayerName);
     }
