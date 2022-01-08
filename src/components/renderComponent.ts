@@ -94,7 +94,7 @@ export class RenderComponent extends Component {
         }
         this.sprite.interactive = true;
         this.sprite.on('mouseover', () => {
-            this.services.Debug.setDebugText(this.entity.transform.scale.x.toString());
+            this.services.Debug.setDebugText(this.entity.transform.position.x.toString());
         });
         if (!this.visible) {
             this.sprite.visible = false;

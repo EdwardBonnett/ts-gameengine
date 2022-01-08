@@ -31,4 +31,30 @@ export class Position {
     set z (val: number) {
         this.entity.transform.localPosition.z = val - (this.entity.parent?.transform.position.z ?? 0);
     }
+
+    get destinationX () {
+        if (this.entity.transform.localPosition.destinationX === null) return null;
+        return (this.entity.parent?.transform.position.x ?? 0) + this.entity.transform.localPosition.destinationX;
+    }
+
+    set destinationX (val: number | null) {
+        if (val === null) {
+            this.entity.transform.localPosition.destinationX = null;
+            return;
+        }
+        this.entity.transform.localPosition.destinationX = val - (this.entity.parent?.transform.position.x ?? 0);
+    }
+
+    get destinationY () {
+        if (this.entity.transform.localPosition.destinationY === null) return null;
+        return (this.entity.parent?.transform.position.y ?? 0) + this.entity.transform.localPosition.destinationY;
+    }
+
+    set destinationY (val: number | null) {
+        if (val === null) {
+            this.entity.transform.localPosition.destinationY = null;
+            return;
+        }
+        this.entity.transform.localPosition.destinationY = val - (this.entity.parent?.transform.position.y ?? 0);
+    }
 }

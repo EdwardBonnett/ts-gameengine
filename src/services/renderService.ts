@@ -37,7 +37,6 @@ export class RenderService extends Service implements IRenderService {
     }
 
     init () {
-        PIXI.settings.ROUND_PIXELS = true;
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         this._camera = new PIXI.Container();
         this._gui = new PIXI.Container();

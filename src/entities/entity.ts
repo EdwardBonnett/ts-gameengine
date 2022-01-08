@@ -89,6 +89,7 @@ export class Entity implements IEntity {
     }
 
     update (dt: number) {
+        this.transform.update(dt);
         Object.values(this._components).forEach((component) => {
             component.update(dt);
         });

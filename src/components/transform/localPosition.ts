@@ -8,6 +8,10 @@ export class LocalPosition implements IPosition {
 
     private _y = 0;
 
+    private _destinationX: number | null = null;
+
+    private _destinationY: number | null = null;
+
     entity!: IEntity;
 
     init (entity: IEntity) {
@@ -22,7 +26,6 @@ export class LocalPosition implements IPosition {
     set x (val: number) {
         if (this._x === val) return;
         this._x = val;
-        // this.entity.transform.position.x = val;
     }
 
     get y () {
@@ -33,5 +36,21 @@ export class LocalPosition implements IPosition {
         if (this.y === val) return;
         this._y = val;
         // this.entity.transform.position.y = val;
+    }
+
+    get destinationX () {
+        return this._destinationX;
+    }
+
+    set destinationX (val: number | null) {
+        this._destinationX = val;
+    }
+
+    get destinationY () {
+        return this._destinationY;
+    }
+
+    set destinationY (val: number | null) {
+        this._destinationY = val;
     }
 }

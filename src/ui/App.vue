@@ -24,5 +24,7 @@ import Message from './message.vue';
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
 }
 </style>

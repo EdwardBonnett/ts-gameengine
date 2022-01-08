@@ -60,11 +60,11 @@ export class Player extends Entity {
     }
 
     update (dt: number) {
-        const inFront = this.services.Physics.raycast(this, 32, 10, this.transform.direction, (entity) => entity?.name === 'RedTile' && entity.parent !== this);
-        if (inFront && this.services.Input.isLastKeyDown('KeyV')) {
-            inFront.destroy();
-            this.services.UI.showMessage('yOU KILLED IT');
-        }
+        // const inFront = this.services.Physics.raycast(this, 32, 10, this.transform.direction, (entity) => entity?.name === 'RedTile' && entity.parent !== this);
+        // if (inFront && this.services.Input.isLastKeyDown('KeyV')) {
+        //     inFront.destroy();
+        //     this.services.UI.showMessage('yOU KILLED IT');
+        // }
         super.update(dt);
     }
 }

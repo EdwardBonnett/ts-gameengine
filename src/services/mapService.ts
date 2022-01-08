@@ -19,8 +19,8 @@ export class MapService extends Service implements IMapService {
 
         if (this.currentMap.backgroundEntity) {
             this.currentMap.entities.push(await this.services.Entity.createEntity(this.currentMap.backgroundEntity, {
-                x: this.currentMap.width * TileSize * 0.5,
-                y: this.currentMap.height * TileSize * 0.5,
+                x: this.currentMap.width * TileSize * 0.5 - TileSize * 0.5,
+                y: this.currentMap.height * TileSize * 0.5 - TileSize * 0.5,
                 componentProps: {
                     RenderComponent: {
                         spriteType: 'tiled',
