@@ -21,11 +21,11 @@ export class RenderService extends Service implements IRenderService {
     }
 
     get screenWidth () {
-        return this.services.Game._app.screen.width;
+        return this.services.Game._app.screen.width / this.services.Game._app.renderer.resolution;
     }
 
     get screenHeight () {
-        return this.services.Game._app.screen.height;
+        return this.services.Game._app.screen.height / this.services.Game._app.renderer.resolution;
     }
 
     get camera () {

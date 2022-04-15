@@ -15,9 +15,9 @@ export class GameService extends Service implements IGameService {
             width: 320,
             height: 320,
             backgroundColor: 0x333333,
-            autoDensity: true,
+            autoDensity: false,
             resizeTo: window,
-            resolution: window.devicePixelRatio,
+            resolution: 4,
         });
         el.appendChild(this._app.view);
         this._app.ticker.add((dt: number) => this.update(dt));
